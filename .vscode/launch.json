@@ -1,0 +1,23 @@
+{
+    // 使用 IntelliSense 了解相关属性。
+    // 悬停以查看现有属性的描述。
+    // 欲了解更多信息，请访问: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "type": "cortex-debug",
+            "request": "launch",
+            "servertype": "openocd",
+            "cwd": "${workspaceRoot}",
+            "executable": "./OBJ/Output.elf",
+            "preLaunchTask": "build",
+            "name": "Debug (OpenOCD)",
+            "interface": "swd",
+            "device": "STM32F407VE",
+            "svdFile": "/Users/huanghuisheng/Desktop/Mydesign/IAP_Design/Application/Link/STM32F40x.svd",
+            "configFiles": [
+                "./Link/stm32f4x.cfg"
+            ],
+        }
+    ]
+}
