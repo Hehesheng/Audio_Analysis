@@ -18,7 +18,9 @@
             "__locale": "c",
             "__functional_03": "c",
             "functional": "c",
-            "delay.h": "c"
+            "delay.h": "c",
+            "main.h": "c",
+            "gpio.h": "c"
         }
     }
 }

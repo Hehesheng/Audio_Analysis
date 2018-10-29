@@ -64,12 +64,11 @@ int _write(int fd, char *ptr, int len)
 /* back up the cursor one space */
 static inline void back_up(void)
 {
-#if scanfSupport
-    end_ndx = dec_ndx(end_ndx);
-#endif
     USART_SendData(USART1, '\010');
     USART_SendData(USART1, ' ');
     USART_SendData(USART1, '\010');
+    USART_RX_BUF[(USART_RX_STA & 0X7FFF) - 1] = 0;
+    USART_RX_STA--;
 }
 
 //初始化IO 串口1
@@ -131,7 +130,6 @@ void USART1_IRQHandler(void) //串口1中断服务程序
             if (Res == 0x0d || Res == 0x0a) //接收到了回车
             {
                 USART_RX_STA |= 0x8000;
-                xEventGroupSetBitsFromISR(EventGroupHandle, EnterEventBit, pdFALSE);
             }
             else
             {
@@ -145,8 +143,6 @@ void USART1_IRQHandler(void) //串口1中断服务程序
                     else
                     {
                         back_up();
-                        USART_RX_BUF[(USART_RX_STA & 0X7FFF) - 1] = 0;
-                        USART_RX_STA--;
                     }
                     /* erases a word */
                 }

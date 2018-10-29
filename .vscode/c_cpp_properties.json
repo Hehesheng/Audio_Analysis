@@ -10,6 +10,7 @@
                 "__GNUC__",
                 "USE_STDPERIPH_DRIVER",
                 "STM32F40_41xxx",
+                "ARM_MATH_CM4",
                 "__FPU_USED",
                 "__FPU_PRESENT"
             ],

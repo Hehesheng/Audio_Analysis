@@ -7,7 +7,6 @@
 void TIM3_PWM_Init(u32 arr, u32 psc)
 {
     //此部分需手动修改IO口设置
-
     GPIO_InitTypeDef GPIO_InitStructure;
     TIM_TimeBaseInitTypeDef TIM_TimeBaseStructure;
     TIM_OCInitTypeDef TIM_OCInitStructure;

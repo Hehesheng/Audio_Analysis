@@ -23,10 +23,10 @@ void Adc1_Init(void)
     RCC_APB2PeriphResetCmd(RCC_APB2Periph_ADC1, DISABLE); //复位结束
 
     ADC_CommonStructInit(&ADC_CommonInitStructure); // ADC指令使用默认配置
+    
     ADC_CommonInit(&ADC_CommonInitStructure);
 
     ADC_StructInit(&ADC_InitStructure); // ADC指令使用默认配置
-    ADC_InitStructure.ADC_Resolution = ADC_Resolution_8b; //8Bits模式
     ADC_Init(ADC1, &ADC_InitStructure);
 
     ADC_Cmd(ADC1, ENABLE); //开启AD转换器
