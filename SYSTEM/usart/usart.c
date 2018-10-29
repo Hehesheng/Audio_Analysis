@@ -148,11 +148,14 @@ void USART1_IRQHandler(void) //串口1中断服务程序
                 }
                 else //正常接收数据
                 {
-                    USART_RX_BUF[USART_RX_STA & 0X3FFF] = Res;
-                    USART_SendData(USART1, Res);
-                    USART_RX_STA++;
-                    if (USART_RX_STA > (USART_REC_LEN - 1))
-                        USART_RX_STA = 0; //数据出错, 重新接收
+                    if ((USART_RX_STA & 0x00FF) < USART_REC_LEN) //数据超长
+                    {
+                        USART_RX_BUF[USART_RX_STA & 0X3FFF] = Res;
+                        USART_SendData(USART1, Res);
+                        USART_RX_STA++;
+                        if (USART_RX_STA > (USART_REC_LEN - 1))
+                            USART_RX_STA = 0; //数据出错, 重新接收
+                    }
                 }
             }
         }
