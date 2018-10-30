@@ -7,7 +7,7 @@ TARGET = Output
 # debug build?
 DEBUG = 1
 # optimization Can be: -Og -Os -Ofast  -On (n can be: 0~3)
-OPT = -Og
+OPT = -O0
 
 #######################################
 # paths
@@ -20,6 +20,7 @@ HARDWARE/ADC \
 HARDWARE/DAC \
 HARDWARE/gpio \
 HARDWARE/PWM \
+HARDWARE/TIM \
 SYSTEM/delay \
 SYSTEM/sys \
 SYSTEM/usart \
@@ -106,6 +107,7 @@ C_INCLUDES =  \
 -IHARDWARE/DAC \
 -IHARDWARE/gpio \
 -IHARDWARE/PWM \
+-IHARDWARE/TIM \
 -ISYSTEM/delay \
 -ISYSTEM/sys \
 -ISYSTEM/usart \

@@ -4,7 +4,9 @@
             "name": "Mac",
             "includePath": [
                 "${workspaceFolder}/**",
-                "/usr/include/malloc"
+                "/usr/include/malloc",
+                "${workspaceFolder}FreeRTOS/portable",
+                "${workspaceFolder}HARDWARE/TIM"
             ],
             "defines": [
                 "__GNUC__",
