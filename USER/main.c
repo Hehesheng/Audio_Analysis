@@ -8,10 +8,13 @@ int main()
 
     Adc1_Init(); //adc初始化
     Dac1_Init(); //DAC初始化
-    // GPIO_ALLInit();
 
-    TIM3_PWM_Init(2000 - 1, 48000 - 1);
-    TIM_SetCompare1(TIM3, 1000); // 比较值CCR1为500
+    Adc1_DMA_Init(ADC_RES_SIZE);
+
+    TIM2_Init(0xFFFFFFFF);
+
+    TIM3_PWM_Init(200 - 1, 480 - 1);
+    TIM_SetCompare1(TIM3, 100);
 
     xTaskCreate((TaskFunction_t)start_task,
                 (const char *)"start_task",
@@ -28,24 +31,40 @@ int main()
 void start_task(void *pvParameters)
 {
     taskENTER_CRITICAL();
-    //led task create
-    xTaskCreate((TaskFunction_t)led_task,
-                (const char *)"led_task",
-                (uint16_t)LED_STK_SIZE,
+    //adc task create
+    xTaskCreate((TaskFunction_t)adc_task,
+                (const char *)"adc_task",
+                (uint16_t)ADC_STK_SIZE,
                 (void *)NULL,
-                (UBaseType_t)LED_TASK_PRIO,
-                (TaskHandle_t)&LedTask_Handler);
+                (UBaseType_t)ADC_TASK_PRIO,
+                (TaskHandle_t)&AdcTask_Handler);
     taskEXIT_CRITICAL();
     vTaskDelete(NULL);
 }
 
-void led_task(void *pvParameters)
+void adc_task(void *pvParameters)
 {
+    TIM2->CNT = 0;
+    Adc1_DMA_Enable();
     while (1)
     {
-        GPIO_SetBits(GPIOA, GPIO_Pin_7);
-        delay_ms(500);
-        GPIO_ResetBits(GPIOA, GPIO_Pin_7);
-        delay_ms(500);
+        if (flag == 1)
+        {
+            flag = 0;
+            for (uint32_t i = 0; i < ADC_RES_SIZE; i++)
+            {
+                printf("%4d,", adc_res[i]);
+                if ((i + 1) % 16 == 0)
+                {
+                    printf("\n");
+                }
+            }
+            arm_fill_q15(0, adc_res, ADC_RES_SIZE);
+            Adc1_DMA_Init(ADC_RES_SIZE);
+            printf("TIM: %ld\n", count);
+            TIM2->CNT = 0;
+            Adc1_DMA_Enable();
+        }
+        delay_ms(100);
     }
 }

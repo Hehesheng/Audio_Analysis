@@ -20,7 +20,8 @@
             "functional": "c",
             "delay.h": "c",
             "main.h": "c",
-            "gpio.h": "c"
+            "gpio.h": "c",
+            "timer.h": "c"
         }
     }
 }

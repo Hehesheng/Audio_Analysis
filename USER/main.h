@@ -10,6 +10,7 @@
 #include "dac.h"
 #include "gpio.h"
 #include "pwm.h"
+#include "timer.h"
 // RTOS
 #include "FreeRTOS.h"
 #include "task.h"
@@ -23,10 +24,10 @@
 TaskHandle_t StartTask_Handler;
 void start_task(void *pvParameters);
 
-//Led_Fun
-#define LED_TASK_PRIO       10
-#define LED_STK_SIZE        64
-TaskHandle_t LedTask_Handler;
-void led_task(void *pvParameters);
+//Adc_Fun
+#define ADC_TASK_PRIO       3
+#define ADC_STK_SIZE        128
+TaskHandle_t AdcTask_Handler;
+void adc_task(void *pvParameters);
 
 #endif
