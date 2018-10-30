@@ -140,7 +140,7 @@ static void Adc1_DMA_Setting_Init(uint32_t buff_size)
     DMA_InitStructure.DMA_PeripheralDataSize = DMA_PeripheralDataSize_HalfWord; //外设数据长度
     DMA_InitStructure.DMA_MemoryDataSize = DMA_MemoryDataSize_HalfWord;         //存储器数据长度
     DMA_InitStructure.DMA_Mode = DMA_Mode_Normal;                               // 使用普通模式
-    DMA_InitStructure.DMA_Priority = DMA_Priority_VeryHigh;                       //中等优先级
+    DMA_InitStructure.DMA_Priority = DMA_Priority_VeryHigh;                     //中等优先级
     DMA_InitStructure.DMA_FIFOMode = DMA_FIFOMode_Disable;                      //FIFO 模式禁止
     DMA_InitStructure.DMA_FIFOThreshold = DMA_FIFOThreshold_Full;               //FIFO 阈值
     DMA_InitStructure.DMA_MemoryBurst = DMA_MemoryBurst_Single;                 //存储器突发单次传输
@@ -176,14 +176,16 @@ void Adc1_DMA_Enable(void)
     while (DMA_GetCmdStatus(DMA2_Stream0) != DISABLE) //确保 DMA 可以被设置
         ;
     DMA_SetCurrDataCounter(DMA2_Stream0, ADC_RES_SIZE); //数据传输量
-    ADC_SoftwareStartConv(ADC1); //使能指定的ADC1的软件转换启动功能
-    DMA_Cmd(DMA2_Stream0, ENABLE);             //开启 DMA 传输
+    ADC_SoftwareStartConv(ADC1);                        //使能指定的ADC1的软件转换启动功能
+    DMA_Cmd(DMA2_Stream0, ENABLE);                      //开启 DMA 传输
 }
 
 void DMA2_Stream0_IRQHandler(void)
 {
-    if (DMA_GetITStatus(DMA2_Stream0, DMA_IT_TCIF0) != RESET)
+    count = TIM2->CNT;
+    if (DMA_GetFlagStatus(DMA2_Stream0, DMA_IT_TCIF0) != RESET)
     {
-        count = TIM2->CNT;
+        flag = 1;
+        DMA_ClearFlag(DMA2_Stream0, DMA_IT_TCIF0);
     }
 }

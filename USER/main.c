@@ -44,22 +44,27 @@ void start_task(void *pvParameters)
 
 void adc_task(void *pvParameters)
 {
-    uint32_t i;
-
     TIM2->CNT = 0;
     Adc1_DMA_Enable();
     while (1)
     {
         if (flag == 1)
         {
-            for (i = 0; i < ADC_RES_SIZE; i++)
-            {
-                printf("res: %d\n", adc_res[i]);
-                printf("TIM: %ld\n", count);
-            }
             flag = 0;
+            for (uint32_t i = 0; i < ADC_RES_SIZE; i++)
+            {
+                printf("%4d,", adc_res[i]);
+                if ((i + 1) % 16 == 0)
+                {
+                    printf("\n");
+                }
+            }
+            arm_fill_q15(0, adc_res, ADC_RES_SIZE);
+            Adc1_DMA_Init(ADC_RES_SIZE);
+            printf("TIM: %ld\n", count);
+            TIM2->CNT = 0;
+            Adc1_DMA_Enable();
         }
         delay_ms(100);
-        printf("adc dr: %d\n", ADC1->DR);
     }
 }

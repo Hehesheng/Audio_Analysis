@@ -3,7 +3,7 @@
 #include "sys.h"
 #include "main.h"
 
-#define ADC_RES_SIZE 4096
+#define ADC_RES_SIZE 8192
 
 extern uint32_t count;
 extern uint16_t adc_res[ADC_RES_SIZE];
