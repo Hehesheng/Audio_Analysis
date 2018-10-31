@@ -1,5 +1,8 @@
 #include "main.h"
 
+__attribute__((section(".ccmram"))) q15_t pInputBuff[ADC_RES_SIZE] = {0};
+__attribute__((section(".ccmram"))) q15_t pOutpuBuff[ADC_RES_SIZE * 2] = {0};
+
 int main()
 {
     NVIC_PriorityGroupConfig(NVIC_PriorityGroup_4); //设置中断
@@ -42,6 +45,12 @@ void start_task(void *pvParameters)
     vTaskDelete(NULL);
 }
 
+void FFTCalculate(void)
+{
+    arm_fill_q15(1, pInputBuff, ADC_RES_SIZE);
+    arm_fill_q15(2, pOutpuBuff, ADC_RES_SIZE * 2);
+}
+
 void adc_task(void *pvParameters)
 {
     TIM2->CNT = 0;
@@ -51,17 +60,16 @@ void adc_task(void *pvParameters)
         if (flag == 1)
         {
             flag = 0;
-            for (uint32_t i = 0; i < ADC_RES_SIZE; i++)
-            {
-                printf("%4d,", adc_res[i]);
-                if ((i + 1) % 16 == 0)
-                {
-                    printf("\n");
-                }
-            }
-            arm_fill_q15(0, adc_res, ADC_RES_SIZE);
-            Adc1_DMA_Init(ADC_RES_SIZE);
+            TIM2->CNT = 0;
+            arm_fill_q15(0, (q15_t *)adc_res, ADC_RES_SIZE);
+            FFTCalculate();
+            printf("Fill Take: %ld\n", TIM2->CNT);
             printf("TIM: %ld\n", count);
+        }
+        if (USART_RX_STA & USART_RX_OK)
+        {
+            USART_RX_STA = 0;
+            Adc1_DMA_Init(ADC_RES_SIZE);
             TIM2->CNT = 0;
             Adc1_DMA_Enable();
         }
