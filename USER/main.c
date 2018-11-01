@@ -47,8 +47,7 @@ void start_task(void *pvParameters)
 
 void FFTCalculate(void)
 {
-    arm_fill_q15(1, pInputBuff, ADC_RES_SIZE);
-    arm_fill_q15(2, pOutpuBuff, ADC_RES_SIZE * 2);
+    
 }
 
 void adc_task(void *pvParameters)
@@ -61,8 +60,9 @@ void adc_task(void *pvParameters)
         {
             flag = 0;
             TIM2->CNT = 0;
+            arm_copy_q15((q15_t*)adc_res, (q15_t*)pInputBuff, ADC_RES_SIZE);
             arm_fill_q15(0, (q15_t *)adc_res, ADC_RES_SIZE);
-            FFTCalculate();
+            // FFTCalculate();
             printf("Fill Take: %ld\n", TIM2->CNT);
             printf("TIM: %ld\n", count);
         }
