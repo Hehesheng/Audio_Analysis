@@ -16,7 +16,7 @@ int main()
 
     TIM2_Init(0xFFFFFFFF);
 
-    TIM3_PWM_Init(200 - 1, 480 - 1);
+    TIM3_PWM_Init(200 - 1, 48 - 1);
     TIM_SetCompare1(TIM3, 100);
 
     xTaskCreate((TaskFunction_t)start_task,
@@ -47,7 +47,26 @@ void start_task(void *pvParameters)
 
 void FFTCalculate(void)
 {
-    
+    uint32_t i;
+    arm_rfft_instance_q15 S;
+
+    if (arm_rfft_init_q15(&S, ADC_RES_SIZE, 0, 1) == ARM_MATH_SUCCESS)
+    {
+        arm_rfft_q15(&S, pInputBuff, pOutpuBuff);
+        arm_fill_q15(0, pInputBuff, ADC_RES_SIZE);
+        arm_cmplx_mag_q15(pOutpuBuff, pInputBuff, ADC_RES_SIZE);
+
+        for (i = 0; i < ADC_RES_SIZE; i++)
+        {
+            if (pInputBuff[i] > 1)
+                printf("point:%4ld Res:%5d\n", i, pInputBuff[i]);
+        }
+    }
+    else
+        printf("FFT Error!!!\n");
+
+    arm_fill_q15(0, pInputBuff, ADC_RES_SIZE);
+    arm_fill_q15(0, pOutpuBuff, ADC_RES_SIZE * 2);
 }
 
 void adc_task(void *pvParameters)
@@ -60,9 +79,9 @@ void adc_task(void *pvParameters)
         {
             flag = 0;
             TIM2->CNT = 0;
-            arm_copy_q15((q15_t*)adc_res, (q15_t*)pInputBuff, ADC_RES_SIZE);
+            arm_copy_q15((q15_t *)adc_res, (q15_t *)pInputBuff, ADC_RES_SIZE);
             arm_fill_q15(0, (q15_t *)adc_res, ADC_RES_SIZE);
-            // FFTCalculate();
+            FFTCalculate();
             printf("Fill Take: %ld\n", TIM2->CNT);
             printf("TIM: %ld\n", count);
         }
