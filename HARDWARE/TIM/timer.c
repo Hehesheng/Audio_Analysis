@@ -1,33 +1,21 @@
 #include "timer.h"
-//////////////////////////////////////////////////////////////////////////////////
-//本程序只供学习使用，未经作者许可，不得用于其它任何用途
-//ALIENTEK STM32F407开发板
-//定时器 驱动代码
-//正点原子@ALIENTEK
-//技术论坛:www.openedv.com
-//创建日期:2014/5/4
-//版本：V1.0
-//版权所有，盗版必究。
-//Copyright(C) 广州市星翼电子科技有限公司 2014-2024
-//All rights reserved
-//////////////////////////////////////////////////////////////////////////////////
 
-//arr：自动重装值。
-//psc：时钟预分频数
+// arr：自动重装值。
+// psc：时钟预分频数
 //定时器溢出时间计算方法:Tout=((arr+1)*(psc+1))/Ft us.
-//Ft=定时器工作频率,单位:Mhz
-void TIM2_Init(uint32_t arr)
-{
+// Ft=定时器工作频率,单位:Mhz
+void TIM2_Init(uint32_t arr) {
     TIM_TimeBaseInitTypeDef TIM_TimeBaseInitStructure;
 
-    RCC_APB1PeriphClockCmd(RCC_APB1Periph_TIM2, ENABLE); ///使能TIM时钟
+    RCC_APB1PeriphClockCmd(RCC_APB1Periph_TIM2, ENABLE);  ///使能TIM时钟
 
-    TIM_TimeBaseInitStructure.TIM_Period = arr;                     //自动重装载值
-    TIM_TimeBaseInitStructure.TIM_Prescaler = 0;                //定时器分频
-    TIM_TimeBaseInitStructure.TIM_CounterMode = TIM_CounterMode_Up; //向上计数模式
+    TIM_TimeBaseInitStructure.TIM_Period = arr;   //自动重装载值
+    TIM_TimeBaseInitStructure.TIM_Prescaler = 0;  //定时器分频
+    TIM_TimeBaseInitStructure.TIM_CounterMode =
+        TIM_CounterMode_Up;  //向上计数模式
     TIM_TimeBaseInitStructure.TIM_ClockDivision = TIM_CKD_DIV1;
 
-    TIM_TimeBaseInit(TIM2, &TIM_TimeBaseInitStructure); //初始化TIM
+    TIM_TimeBaseInit(TIM2, &TIM_TimeBaseInitStructure);  //初始化TIM
 
-    TIM_Cmd(TIM2, ENABLE);                     //使能定时器
+    TIM_Cmd(TIM2, ENABLE);  //使能定时器
 }
