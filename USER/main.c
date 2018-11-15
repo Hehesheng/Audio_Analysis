@@ -53,6 +53,7 @@ void calculate_task(void *pvParameters) {
     uint32_t i;
     double cache;
     arm_rfft_instance_q15 S;
+
     while (1) {
         xEventGroupWaitBits(fft_events, DATA_COPY_FINISH, pdFALSE, pdTRUE,
                             portMAX_DELAY);  //等待数据拷贝完成
