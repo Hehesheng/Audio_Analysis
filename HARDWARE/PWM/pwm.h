@@ -1,5 +1,5 @@
-#ifndef _PWM_H
-#define _PWM_H
+#ifndef __PWM_H
+#define __PWM_H
 #include "sys.h"
 
 void TIM3_PWM_Init(u32 arr, u32 psc);
