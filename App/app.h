@@ -1,5 +1,5 @@
-#ifndef __TASKS_H
-#define __TASKS_H
+#ifndef __APP_H
+#define __APP_H
 
 // SYSTEM
 #include "delay.h"
@@ -14,11 +14,12 @@
 // RTOS
 #include "FreeRTOS.h"
 #include "event_groups.h"
-#include "tasks.h"
 // Third Party
 #include "arm_math.h"
 #include "math.h"
 #include "stdio.h"
+
+#define FFT_RES_PIXEL 5.2104
 
 // EventGroup handle
 extern EventGroupHandle_t fft_events;

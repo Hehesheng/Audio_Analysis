@@ -24,6 +24,7 @@ HARDWARE/TIM \
 SYSTEM/delay \
 SYSTEM/sys \
 SYSTEM/usart \
+App \
 USER \
 DSP \
 FreeRTOS \
@@ -111,6 +112,7 @@ C_INCLUDES =  \
 -ISYSTEM/delay \
 -ISYSTEM/sys \
 -ISYSTEM/usart \
+-IApp \
 -IUSER \
 -IUSMART \
 -IDSP \
