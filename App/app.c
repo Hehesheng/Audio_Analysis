@@ -12,7 +12,7 @@ BaseType_t fftFindResult(q15_t *fft_buff, uint32_t buff_size, double *freq_res,
 
 void calculate_task(void *pvParameters) {
     uint32_t i;
-    double cache;
+    double cache, freq_cache, amp_cache;
     arm_rfft_instance_q15 S;
 
     while (1) {
@@ -35,8 +35,11 @@ void calculate_task(void *pvParameters) {
                 if (pInputBuff[i] > 0)
                     printf("point:%4ld Res:%5d\n", i, pInputBuff[i]);
             }
-            fftFindResult(pInputBuff, ADC_RES_SIZE, &cache, &cache);
-            printf("The freq: %lf hz\n", cache);
+            while (fftFindResult(pInputBuff, ADC_RES_SIZE / 2, &freq_cache,
+                                 &amp_cache) == pdTRUE) {
+                printf("The freq: %lf hz\t", freq_cache);
+                printf("The amp: %lf int\n", amp_cache);
+            }
         } else
             printf("FFT Error!!!\n");  // fft初始化出错
 
@@ -48,6 +51,11 @@ void calculate_task(void *pvParameters) {
     }
 }
 
+/*
+ * @brief  adc任务函数, 负责ADC的DMA的控制
+ * @arg    None
+ * @retval None
+ */
 void adc_task(void *pvParameters) {
     TIM2->CNT = 0;
 
@@ -68,7 +76,7 @@ void adc_task(void *pvParameters) {
 
         vTaskList((char *)debug_buff);
         printf("%s\n", debug_buff);
-        delay_ms(2000);
+        delay_ms(3000);
     }
 }
 
@@ -95,6 +103,23 @@ double fftCalculateFreq(q15_t *fft_buff, uint32_t begin, uint32_t end) {
 }
 
 /*
+ * @brief  计算幅度
+ * @info   计算公式
+ *         sqrt(sum(pow(fft_buff[begin:end], 2)))
+ * @param  fft_buff: 输入数组 begin: 开始位 end: 结束位
+ * @retval 计算出幅度
+ */
+double fftCalculateAmp(q15_t *fft_buff, uint32_t begin, uint32_t end) {
+    double sum = 0;
+    uint32_t i;
+
+    for (i = begin; i <= end; i++)
+        sum += (double)fft_buff[i] * (double)fft_buff[i];
+
+    return sqrt(sum);
+}
+
+/*
  * @brief  寻找FFT结果中的频率和大小
  * @param  调用前请设置fft分辨率宏 FFT_RES_PIXEL
  *         函数可迭代, 每次都只返回一个结果
@@ -105,8 +130,8 @@ double fftCalculateFreq(q15_t *fft_buff, uint32_t begin, uint32_t end) {
  */
 BaseType_t fftFindResult(q15_t *fft_buff, uint32_t buff_size, double *freq_res,
                          double *amp_res) {
-    static uint32_t index;     //记录上一次离开时数组结束位置
-    BaseType_t res = pdFALSE;  //输出结果
+    static uint32_t index;    //记录上一次离开时数组结束位置
+    BaseType_t res = pdTRUE;  //输出结果
     uint32_t i, data_begin = 0, data_end = 0;
     uint8_t flag = 0;
 
@@ -121,17 +146,19 @@ BaseType_t fftFindResult(q15_t *fft_buff, uint32_t buff_size, double *freq_res,
         } else if ((fft_buff[i] < 0) && (flag == 1)) {
             data_end = i - 1;
             index = i - 1;
-            res = pdTRUE;
             flag = 2;
             break;
         }
     }
-    index = 0;  //debug
+
     if (flag == 2) {
         *freq_res =
             FFT_RES_PIXEL * fftCalculateFreq(fft_buff, data_begin, data_end);
+        *amp_res = fftCalculateAmp(fft_buff, data_begin, data_end);
     } else {
         index = 0;
         res = pdFALSE;  //没有找到
     }
+
+    return res;
 }

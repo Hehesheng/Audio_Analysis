@@ -5,7 +5,7 @@ int main() {
     delay_init(168);    // delay初始化，系统主频168MHz
     uart_init(115200);  // USART1波特率设置为115200
 
-    Adc1_Init();  // adc初始化ç
+    Adc1_Init();  // adc初始化
     Dac1_Init();  // DAC初始化
 
     Adc1_DMA_Init(ADC_RES_SIZE);

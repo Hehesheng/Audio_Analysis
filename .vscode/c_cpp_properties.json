@@ -6,7 +6,8 @@
                 "${workspaceFolder}/**",
                 "/usr/include/malloc",
                 "${workspaceFolder}FreeRTOS/portable",
-                "${workspaceFolder}HARDWARE/TIM"
+                "${workspaceFolder}HARDWARE/TIM",
+                "${workspaceFolder}App"
             ],
             "defines": [
                 "__GNUC__",

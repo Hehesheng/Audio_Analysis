@@ -35,7 +35,7 @@ void adc_task(void *pvParameters);
 
 // Cal_Fun
 #define CAL_TASK_PRIO 7
-#define CAL_STK_SIZE 2048
+#define CAL_STK_SIZE 1024
 TaskHandle_t CalculateTask_Handler;
 void calculate_task(void *pvParameters);
 
