@@ -23,7 +23,8 @@
             "gpio.h": "c",
             "timer.h": "c",
             "core_cm4.h": "c",
-            "core_cmsimd.h": "c"
+            "core_cmsimd.h": "c",
+            "dac.h": "c"
         }
     }
 }
