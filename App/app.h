@@ -5,6 +5,7 @@
 #include "delay.h"
 #include "sys.h"
 #include "usart.h"
+#include "app_fun.h"
 // #include "usmart.h"
 // HARDWARE
 #include "adc.h"
@@ -19,13 +20,12 @@
 #include "math.h"
 #include "stdio.h"
 
-#define FFT_RES_PIXEL 5.2104
-
 // EventGroup handle
 extern EventGroupHandle_t fft_events;
 #define ADC_DMA_FINISH (1U << 0U)
 #define DATA_COPY_FINISH (1U << 1U)
 #define FFT_CAL_FREE (1U << 2U)
+#define FFT_INFO_COPY (1U << 3U)
 
 // Adc_Fun
 #define ADC_TASK_PRIO 8

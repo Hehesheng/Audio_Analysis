@@ -2,13 +2,14 @@
 
 __attribute__((section(".ccmram"))) q15_t pInputBuff[ADC_RES_SIZE] = {0};
 __attribute__((section(".ccmram"))) q15_t pOutpuBuff[ADC_RES_SIZE * 2] = {0};
+__attribute__((section(".ccmram"))) wave_info_t fft_res_save[3 * 100];
 
 EventGroupHandle_t fft_events = NULL;
 
-uint8_t debug_buff[512] = {0};
+wave_info_t fft_info[100];
+uint32_t freq_num = 0;
 
-BaseType_t fftFindResult(q15_t *fft_buff, uint32_t buff_size, double *freq_res,
-                         double *amp_res);
+uint8_t debug_buff[512] = {0};
 
 void calculate_task(void *pvParameters) {
     uint32_t i;
@@ -31,15 +32,28 @@ void calculate_task(void *pvParameters) {
             }
             arm_offset_q15(pInputBuff, -16, pInputBuff,
                            ADC_RES_SIZE);  //误差偏移
-            for (i = 0; i < ADC_RES_SIZE / 2; i++) {
-                if (pInputBuff[i] > 0)
-                    printf("point:%4ld Res:%5d\n", i, pInputBuff[i]);
-            }
+            // for (i = 0; i < ADC_RES_SIZE / 2; i++) {
+            //     if (pInputBuff[i] > 0)
+            //         printf("point:%4ld Res:%5d\n", i, pInputBuff[i]);
+            // }
+            // taskENTER_CRITICAL();
             while (fftFindResult(pInputBuff, ADC_RES_SIZE / 2, &freq_cache,
                                  &amp_cache) == pdTRUE) {
+                fft_info[freq_num].amp = amp_cache;
+                fft_info[freq_num].freq = freq_cache;
+                freq_num++;
                 printf("The freq: %lf hz\t", freq_cache);
                 printf("The amp: %lf int\n", amp_cache);
             }
+            // taskEXIT_CRITICAL();
+            freq_num--;
+            sort_fft(fft_info, freq_num + 1);
+            for (i = 0; i < freq_num + 1; i++) {
+                printf("AF freq: %lf hz\t", fft_info[i].freq);
+                printf("AF amp: %lf int\n", fft_info[i].amp);
+            }
+
+            freq_num = 0;
         } else
             printf("FFT Error!!!\n");  // fft初始化出错
 
@@ -76,89 +90,6 @@ void adc_task(void *pvParameters) {
 
         vTaskList((char *)debug_buff);
         printf("%s\n", debug_buff);
-        delay_ms(3000);
+        delay_ms(1000);
     }
-}
-
-/*
- * @brief  计算频率
- * @param  计算公式:
- *         sum([begin:end]*fft_buff[begin:end])/sum(fft_buff[begin:end])
- * @arg    fft_buff: 输入数组 begin: 开始位 end: 结束位
- * @retval 计算出的频率
- */
-double fftCalculateFreq(q15_t *fft_buff, uint32_t begin, uint32_t end) {
-    double freq_res = 0;
-    uint32_t freq_sum = 0, data_sum = 0;
-    uint32_t i = 0;
-
-    for (i = begin; i <= end; i++) {  //求出分子分母
-        data_sum += fft_buff[i];
-        freq_sum += i * fft_buff[i];
-    }
-
-    freq_res = ((double)freq_sum) / ((double)data_sum);
-
-    return freq_res;
-}
-
-/*
- * @brief  计算幅度
- * @info   计算公式
- *         sqrt(sum(pow(fft_buff[begin:end], 2)))
- * @param  fft_buff: 输入数组 begin: 开始位 end: 结束位
- * @retval 计算出幅度
- */
-double fftCalculateAmp(q15_t *fft_buff, uint32_t begin, uint32_t end) {
-    double sum = 0;
-    uint32_t i;
-
-    for (i = begin; i <= end; i++)
-        sum += (double)fft_buff[i] * (double)fft_buff[i];
-
-    return sqrt(sum);
-}
-
-/*
- * @brief  寻找FFT结果中的频率和大小
- * @param  调用前请设置fft分辨率宏 FFT_RES_PIXEL
- *         函数可迭代, 每次都只返回一个结果
- *         找到有效结果返回pdTRUE, 如果没有返回pdFALSE
- * @arg    [IN]fft_buf: 输入的数组 [IN]buff_size: 数组大小
- *         [IN,OUT]frq_res: 频率计算结果 [IN,OUT]amp_res: 幅度计算结果
- * @retval 是否找到结果
- */
-BaseType_t fftFindResult(q15_t *fft_buff, uint32_t buff_size, double *freq_res,
-                         double *amp_res) {
-    static uint32_t index;    //记录上一次离开时数组结束位置
-    BaseType_t res = pdTRUE;  //输出结果
-    uint32_t i, data_begin = 0, data_end = 0;
-    uint8_t flag = 0;
-
-    /*找出一个尖刺, 已经留意到的潜在bug, 暂时不修, 实现功能先
-      1. 两结果靠近, 导致数据交叉 2. 边界情况, 当(buff_size - 1) > 0
-     */
-    for (i = index + 1; i < buff_size; i++) {
-        if ((fft_buff[i] > 0) && (flag == 0)) {
-            data_begin = i;
-            data_end = i;
-            flag = 1;
-        } else if ((fft_buff[i] < 0) && (flag == 1)) {
-            data_end = i - 1;
-            index = i - 1;
-            flag = 2;
-            break;
-        }
-    }
-
-    if (flag == 2) {
-        *freq_res =
-            FFT_RES_PIXEL * fftCalculateFreq(fft_buff, data_begin, data_end);
-        *amp_res = fftCalculateAmp(fft_buff, data_begin, data_end);
-    } else {
-        index = 0;
-        res = pdFALSE;  //没有找到
-    }
-
-    return res;
 }

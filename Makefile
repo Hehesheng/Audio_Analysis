@@ -7,7 +7,7 @@ TARGET = Output
 # debug build?
 DEBUG = 1
 # optimization Can be: -Og -Os -Ofast  -On (n can be: 0~3)
-OPT = -O0
+OPT = -Og
 
 #######################################
 # paths

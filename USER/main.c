@@ -6,7 +6,7 @@ int main() {
     uart_init(115200);  // USART1波特率设置为115200
 
     Adc1_Init();  // adc初始化
-    Dac1_Init();  // DAC初始化
+    Dac_Init();   // DAC初始化
 
     Adc1_DMA_Init(ADC_RES_SIZE);
 
@@ -14,6 +14,9 @@ int main() {
 
     TIM3_PWM_Init(100 - 1, 840 - 1);
     TIM_SetCompare1(TIM3, 50 - 1);
+
+    Dac1_Set_Vol(1500);
+    Dac2_Set_Vol(0);
 
     xTaskCreate((TaskFunction_t)start_task, (const char *)"start_task",
                 (uint16_t)START_STK_SIZE, (void *)NULL,

@@ -15,7 +15,7 @@ void Adc1_Init(void) {
     RCC_APB2PeriphClockCmd(RCC_APB2Periph_ADC1, ENABLE);   //使能ADC1时钟
 
     //先初始化IO口
-    GPIO_InitStructure.GPIO_Pin = GPIO_Pin_5;
+    GPIO_InitStructure.GPIO_Pin = GPIO_Pin_1;
     GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AN;    //模拟输入
     GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_DOWN;  //下拉
     GPIO_Init(GPIOA, &GPIO_InitStructure);          //初始化
@@ -76,7 +76,7 @@ static void Adc1_DMA_GPIO_Init(void) {
     RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOA, ENABLE);  //使能GPIOA时钟
 
     //先初始化IO口
-    GPIO_InitStructure.GPIO_Pin = GPIO_Pin_5;
+    GPIO_InitStructure.GPIO_Pin = GPIO_Pin_1;
     GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AN;    //模拟输入
     GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_DOWN;  //下拉
     GPIO_Init(GPIOA, &GPIO_InitStructure);          //初始化
@@ -109,7 +109,7 @@ static void Adc1_Mode_Init(void) {
     ADC_Init(ADC1, &ADC_InitStructure);
 
     ADC_RegularChannelConfig(
-        ADC1, ADC_Channel_5, 1,
+        ADC1, ADC_Channel_1, 1,
         ADC_SampleTime_480Cycles);  // ADC1,ADC通道,480个周期,提高采样时间可以提高精确度
 
     ADC_Cmd(ADC1, ENABLE);  //开启AD转换器
@@ -153,7 +153,7 @@ static void Adc1_DMA_NVIC_Config(void) {
     NVIC_InitTypeDef NVIC_InitStructure;
 
     NVIC_InitStructure.NVIC_IRQChannel = DMA2_Stream0_IRQn;
-    NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 6;  //抢占优先级
+    NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 9;  //抢占优先级
     NVIC_InitStructure.NVIC_IRQChannelSubPriority = 1;         //子优先级1
     NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;  // IRQ通道使能
     NVIC_Init(&NVIC_InitStructure);  //根据指定的参数初始化VIC寄存器
