@@ -41,6 +41,11 @@ void start_task(void *pvParameters) {
                 (uint16_t)CAL_STK_SIZE, (void *)NULL,
                 (UBaseType_t)CAL_TASK_PRIO,
                 (TaskHandle_t)&CalculateTask_Handler);
+    // ui task create
+    xTaskCreate((TaskHandle_t)ui_task, (const char *)"ui_task",
+                (uint16_t)UI_STK_SIZE, (void *)NULL,
+                (UBaseType_t)UI_TASK_PRIO,
+                (TaskHandle_t)&UITask_Handler);
     taskEXIT_CRITICAL();
     vTaskDelete(NULL);
 }

@@ -118,30 +118,42 @@ void uart_init(u32 bound) {
 
 void USART1_IRQHandler(void) {  //串口1中断服务程序
     u8 Res;
-    //接收中断(接收到的数据必须是0x0d 0x0a结尾)
+    BaseType_t task_woken;
+    //接收中断(接收到的数据必须是0x0d 或 0x0a结尾)
     if (USART_GetITStatus(USART1, USART_IT_RXNE) != RESET) {
         Res = USART_ReceiveData(USART1);  //读取接收到的数据
 
         if ((USART_RX_STA & 0x8000) == 0) {    //接收未完成
             if (Res == 0x0d || Res == 0x0a) {  //接收到了回车
                 USART_RX_STA |= 0x8000;
+                xEventGroupSetBitsFromISR(fft_events, USART_RX_COMMAND,
+                                          &task_woken);
+                if (task_woken == pdTRUE) {
+                    taskYIELD();
+                }
             } else {
-                /* or DEL erase a character */
-                if ((Res == '\010') || (Res == '\177')) {
-                    if ((USART_RX_STA & 0X3FFF) == 0) {
-                        USART_SendData(USART1, '\a');
-                    } else {
-                        back_up();
-                    }
-                    /* erases a word */
-                } else {  //正常接收数据
-                    if ((USART_RX_STA & 0x00FF) < USART_REC_LEN) {  //数据超长
-                        USART_RX_BUF[USART_RX_STA & 0X3FFF] = Res;
-                        USART_SendData(USART1, Res);
-                        USART_RX_STA++;
-                        if (USART_RX_STA > (USART_REC_LEN - 1))
-                            USART_RX_STA = 0;  //数据出错, 重新接收
-                    }
+                // /* or DEL erase a character */
+                // if ((Res == '\010') || (Res == '\177')) {
+                //     if ((USART_RX_STA & 0X3FFF) == 0) {
+                //         USART_SendData(USART1, '\a');
+                //     } else {
+                //         back_up();
+                //     }
+                //     /* erases a word */
+                // } else {  //正常接收数据
+                //     if ((USART_RX_STA & 0x00FF) < USART_REC_LEN) { //数据超长
+                //         USART_RX_BUF[USART_RX_STA & 0X3FFF] = Res;
+                //         USART_SendData(USART1, Res);
+                //         USART_RX_STA++;
+                //         if (USART_RX_STA > (USART_REC_LEN - 1))
+                //             USART_RX_STA = 0;  //数据出错, 重新接收
+                //     }
+                // }
+                if ((USART_RX_STA & 0x00FF) < USART_REC_LEN) {  //数据超长
+                    USART_RX_BUF[USART_RX_STA & 0X3FFF] = Res;
+                    USART_RX_STA++;
+                    if (USART_RX_STA > (USART_REC_LEN - 1))
+                        USART_RX_STA = 0;  //数据出错, 重新接收
                 }
             }
         }

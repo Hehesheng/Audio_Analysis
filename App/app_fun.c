@@ -70,6 +70,13 @@ BaseType_t fftFindResult(q15_t *fft_buff, uint32_t buff_size, double *freq_res,
             break;
         }
     }
+    for (i = data_begin + 1; i < data_end; i++) {  //查看紧凑信号
+        if (fft_buff[i] < fft_buff[i - 1] && fft_buff[i] < fft_buff[i + 1]) {
+            //满足比两边都小
+            data_end = i;
+            index = i - 1;
+        }
+    }
 
     if (flag == 2) {
         *freq_res =
@@ -129,7 +136,7 @@ void sort_fft(wave_info_t *buff, uint32_t size) {
     {
         for (j = 0; j < size - i - 1;
              j++) {  //每一趟扫描到a[n-i-2]与a[n-i-1]比较为止结束
-            if (buff[j].amp > buff[j + 1].amp) {
+            if (buff[j].watt < buff[j + 1].watt) {
                 t = buff[j + 1];
                 buff[j + 1] = buff[j];
                 buff[j] = t;
@@ -162,6 +169,42 @@ double voltageToMultiple(double vol) {
  * @param  Function Param
  * @retval None
  */
-void fftCalculateWatt(wave_info_t *buff, uint32_t size) {
+void fftCalculateWatt(wave_info_t *buff, uint32_t size, double mul) {
+    uint32_t i = 0;
 
+    for (i = 0; i < size; i++) {
+        buff[i].watt = (buff[i].amp * 3.3 / 4096 / mul) *
+                       (buff[i].amp * 3.3 / 4096 / mul) /
+                       (2 * INPUT_RESISTANCE) * 1000;
+    }
+}
+
+/*
+ * @brief  填充记忆数组
+ * @info   Function Info
+ * @param  Function Param
+ * @retval None
+ */
+void fillZeroWaveInfoBuff(wave_info_t *buff, uint32_t size) {
+    uint32_t i;
+
+    for (i = 0; i < size; i++) {
+        buff[i].amp = 0;
+        buff[i].freq = 0;
+        buff[i].watt = 0;
+    }
+}
+
+/*
+ * @brief  复制数组
+ * @info   Function Info
+ * @param  Function Param
+ * @retval None
+ */
+void copyWaveInfoBuff(wave_info_t *pSBuff, wave_info_t *pDBuff, uint32_t size) {
+    uint32_t i;
+
+    for (i = 0; i < size; i++) {
+        pDBuff[i] = pSBuff[i];
+    }
 }

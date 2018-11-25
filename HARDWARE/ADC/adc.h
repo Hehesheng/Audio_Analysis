@@ -5,7 +5,7 @@
 
 #define ADC_RES_SIZE 8192U
 
-extern uint32_t count;
+// extern uint32_t count;
 extern uint16_t adc_res[ADC_RES_SIZE];
 extern uint8_t flag;
 

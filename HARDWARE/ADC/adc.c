@@ -1,6 +1,6 @@
 #include "adc.h"
 
-uint32_t count = 0;
+// uint32_t count = 0;
 uint16_t adc_res[ADC_RES_SIZE] = {0};  //转化结果
 
 //初始化ADC
@@ -179,7 +179,7 @@ void Adc1_DMA_Enable(void) {
 
 void DMA2_Stream0_IRQHandler(void) {
     BaseType_t task_woken;
-    count = TIM2->CNT;
+    // count = TIM2->CNT;
     if (DMA_GetFlagStatus(DMA2_Stream0, DMA_IT_TCIF0) != RESET) {
         while (xEventGroupSetBitsFromISR(fft_events, ADC_DMA_FINISH,
                                          &task_woken) == pdFALSE)
