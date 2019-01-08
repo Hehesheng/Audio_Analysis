@@ -29,6 +29,8 @@ extern EventGroupHandle_t fft_events;
 #define DATA_SHOULD_SAVE (1U << 4U)
 #define USART_RX_COMMAND 1U << 5U
 
+#define HMI_COMMAND_END printf("\xff\xff\xff")
+
 // Adc_Fun
 #define ADC_TASK_PRIO 8
 #define ADC_STK_SIZE 256
@@ -43,7 +45,7 @@ void calculate_task(void *pvParameters);
 
 // ui_Fun
 #define UI_TASK_PRIO 9
-#define UI_STK_SIZE 512
+#define UI_STK_SIZE 1024
 TaskHandle_t UITask_Handler;
 void ui_task(void *pvParameters);
 

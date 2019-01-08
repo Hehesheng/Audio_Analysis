@@ -94,7 +94,7 @@
 #define configUSE_TICKLESS_IDLE					0                       //1启用低功耗tickless模式
 #define configUSE_QUEUE_SETS					1                       //为1时启用队列
 #define configCPU_CLOCK_HZ						(SystemCoreClock)       //CPU频率
-#define configTICK_RATE_HZ						(1000)                  //时钟节拍频率，这里设置为1000，周期就是1ms
+#define configTICK_RATE_HZ						(100)                   //时钟节拍频率，这里设置为1000，周期就是1ms
 #define configMAX_PRIORITIES					(32)                    //可使用的最大优先级
 #define configMINIMAL_STACK_SIZE				((unsigned short)128)   //空闲任务使用的堆栈大小
 #define configMAX_TASK_NAME_LEN					(16)                    //任务名字字符串长度
@@ -129,7 +129,7 @@
 /***************************************************************************************************************/
 /*                                FreeRTOS与运行时间和任务状态收集有关的配置选项                                 */
 /***************************************************************************************************************/
-#define configGENERATE_RUN_TIME_STATS	        0                       //为1时启用运行时间统计功能
+#define configGENERATE_RUN_TIME_STATS	        1                       //为1时启用运行时间统计功能
 #define configUSE_TRACE_FACILITY				1                       //为1启用可视化跟踪调试
 #define configUSE_STATS_FORMATTING_FUNCTIONS	1                       //与宏configUSE_TRACE_FACILITY同时为1时会编译下面3个函数
                                                                         //prvWriteNameToBuffer(),vTaskList(),
@@ -184,6 +184,11 @@
 /***************************************************************************************************************/
 #define xPortPendSVHandler 	PendSV_Handler
 #define vPortSVCHandler 	SVC_Handler
+
+#if (configGENERATE_RUN_TIME_STATS)
+#define portCONFIGURE_TIMER_FOR_RUN_TIME_STATS()
+#define portGET_RUN_TIME_COUNTER_VALUE() (TIM2->CNT)
+#endif /* configGENERATE_RUN_TIME_STATS */
 
 #endif /* FREERTOS_CONFIG_H */
 

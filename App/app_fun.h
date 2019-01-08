@@ -23,7 +23,7 @@ BaseType_t fftFindResult(q15_t *fft_buff, uint32_t buff_size, double *freq_res,
 void quick_sort(wave_info_t *array, uint32_t start, uint32_t end);
 double voltageToMultiple(double vol);
 void sort_fft(wave_info_t *buff, uint32_t size);
-void fftCalculateWatt(wave_info_t *buff, uint32_t size, double mul);
+void fftCalculateWatt(wave_info_t *buff, uint32_t size, uint8_t mul);
 void fillZeroWaveInfoBuff(wave_info_t *buff, uint32_t size);
 void copyWaveInfoBuff(wave_info_t *pSBuff, wave_info_t *pDBuff, uint32_t size);
 

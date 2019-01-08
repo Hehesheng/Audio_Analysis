@@ -110,7 +110,7 @@ static void Adc1_Mode_Init(void) {
 
     ADC_RegularChannelConfig(
         ADC1, ADC_Channel_1, 1,
-        ADC_SampleTime_480Cycles);  // ADC1,ADC通道,480个周期,提高采样时间可以提高精确度
+        ADC_SampleTime_480Cycles);  // ADC1,ADC通道,480个周期
 
     ADC_Cmd(ADC1, ENABLE);  //开启AD转换器
     ADC_DMACmd(ADC1, ENABLE);
@@ -186,7 +186,5 @@ void DMA2_Stream0_IRQHandler(void) {
             ;
         DMA_ClearFlag(DMA2_Stream0, DMA_IT_TCIF0);
     }
-    if (task_woken == pdTRUE) {
-        taskYIELD();  //任务切换
-    }
+    portYIELD_FROM_ISR(task_woken);  //任务切换
 }

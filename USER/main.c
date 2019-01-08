@@ -15,8 +15,13 @@ int main() {
     TIM3_PWM_Init(100 - 1, 840 - 1);
     TIM_SetCompare1(TIM3, 50 - 1);
 
-    Dac1_Set_Vol(1500);
-    Dac2_Set_Vol(0);
+    Dac1_Set_Vol(0);
+    Dac2_Set_Vol(1600);
+
+    while (1) {
+        printf("qqqqqq\r\n");
+        delay_ms(500);
+    }
 
     xTaskCreate((TaskFunction_t)start_task, (const char *)"start_task",
                 (uint16_t)START_STK_SIZE, (void *)NULL,
@@ -37,12 +42,12 @@ void start_task(void *pvParameters) {
                 (uint16_t)ADC_STK_SIZE, (void *)NULL,
                 (UBaseType_t)ADC_TASK_PRIO, (TaskHandle_t)&AdcTask_Handler);
     // cal task create
-    xTaskCreate((TaskHandle_t)calculate_task, (const char *)"cal_task",
+    xTaskCreate((TaskFunction_t)calculate_task, (const char *)"cal_task",
                 (uint16_t)CAL_STK_SIZE, (void *)NULL,
                 (UBaseType_t)CAL_TASK_PRIO,
                 (TaskHandle_t)&CalculateTask_Handler);
     // ui task create
-    xTaskCreate((TaskHandle_t)ui_task, (const char *)"ui_task",
+    xTaskCreate((TaskFunction_t)ui_task, (const char *)"ui_task",
                 (uint16_t)UI_STK_SIZE, (void *)NULL,
                 (UBaseType_t)UI_TASK_PRIO,
                 (TaskHandle_t)&UITask_Handler);

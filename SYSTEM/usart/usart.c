@@ -125,12 +125,11 @@ void USART1_IRQHandler(void) {  //串口1中断服务程序
 
         if ((USART_RX_STA & 0x8000) == 0) {    //接收未完成
             if (Res == 0x0d || Res == 0x0a) {  //接收到了回车
+                USART_RX_BUF[USART_RX_STA] = '\0';
                 USART_RX_STA |= 0x8000;
                 xEventGroupSetBitsFromISR(fft_events, USART_RX_COMMAND,
                                           &task_woken);
-                if (task_woken == pdTRUE) {
-                    taskYIELD();
-                }
+                portYIELD_FROM_ISR(task_woken);
             } else {
                 // /* or DEL erase a character */
                 // if ((Res == '\010') || (Res == '\177')) {

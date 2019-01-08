@@ -131,6 +131,8 @@ void quick_sort(wave_info_t *array, uint32_t start, uint32_t end) {
 void sort_fft(wave_info_t *buff, uint32_t size) {
     int i, j;
     wave_info_t t;
+
+    if (size == 0 || size > 6000) return;
     //冒泡排序
     for (i = 0; i < size - 1; i++)  // n个数的数列总共扫描n-1次
     {
@@ -148,12 +150,13 @@ void sort_fft(wave_info_t *buff, uint32_t size) {
 /*
  * @brief  计算电压与倍率关系
  * @info   公式:137.85*vol^4-142.19*vol^3+75.485*vol^2-7.2939*x+1.0295
- * @param  电压大小
+ * @param  电压大小mV
  * @retval 放大倍数
  */
 double voltageToMultiple(double vol) {
     double res = 0;
 
+    vol /= 1000;
     res += 137.85 * pow(vol, 4);
     res -= 142.19 * pow(vol, 3);
     res += 75.485 * pow(vol, 2);
@@ -169,13 +172,15 @@ double voltageToMultiple(double vol) {
  * @param  Function Param
  * @retval None
  */
-void fftCalculateWatt(wave_info_t *buff, uint32_t size, double mul) {
+void fftCalculateWatt(wave_info_t *buff, uint32_t size, uint8_t mul) {
     uint32_t i = 0;
+    double arr[] = {0.79, 65.6, 43.2, 33.6, 27.2, 17.6, 10.8, 4.7, 2.2, 0.94};
 
     for (i = 0; i < size; i++) {
-        buff[i].watt = (buff[i].amp * 3.3 / 4096 / mul) *
-                       (buff[i].amp * 3.3 / 4096 / mul) /
+        buff[i].watt = (buff[i].amp * 3.3 / 4096 / 1) *
+                       (buff[i].amp * 3.3 / 4096 / 1) /
                        (2 * INPUT_RESISTANCE) * 1000;
+        // buff[i].watt /= 0.6;
     }
 }
 

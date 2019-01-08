@@ -1,6 +1,8 @@
-# test
-
 OBJ/
-
+.gitignore
 *.bat
 /Debug/
+Link/
+.vscode
+USER/*.uv*
+*.code-workspacell
