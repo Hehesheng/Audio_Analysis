@@ -58,13 +58,13 @@ PERIFLIB_SOURCES =
 #######################################
 # binaries
 #######################################
-BINPATH = /Users/huanghuisheng/gcc-arm-none-eabi-7-2018-q2-update/bin
+BINPATH = 
 PREFIX = arm-none-eabi-
-CC = $(BINPATH)/$(PREFIX)gcc
-AS = $(BINPATH)/$(PREFIX)gcc -x assembler-with-cpp
-CP = $(BINPATH)/$(PREFIX)objcopy
-AR = $(BINPATH)/$(PREFIX)ar
-SZ = $(BINPATH)/$(PREFIX)size
+CC = $(BINPATH)$(PREFIX)gcc
+AS = $(BINPATH)$(PREFIX)gcc -x assembler-with-cpp
+CP = $(BINPATH)$(PREFIX)objcopy
+AR = $(BINPATH)$(PREFIX)ar
+SZ = $(BINPATH)$(PREFIX)size
 HEX = $(CP) -O ihex
 BIN = $(CP) -O binary -S
 
